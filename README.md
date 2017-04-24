@@ -44,9 +44,15 @@ https://en.wikipedia.org/wiki/Stigler_diet
   *******************************************************
   
  input = "Stigler_Full_77_1939.dat"		! Full Stigler Problem 77 Foods, 1939
+ 
  input = "Stigler_Reduced_9_1939.dat"		! Reduced Stigler Problem 9 Foods, 1939
+ 
  input = "Stigler_Reduced_15_1944.dat"		! Reduced Stigler Problem 15 Foods, 1944
+ 
  input = "Everest_trip1.dat"				! Everest Problem 1/3
+ 
  input = "Everest_trip2_trip3.dat"			! Everest Problem 2/3
+ 
  input = "Everest_summit.dat"				! Everest Problem 3/3
+ 
   ******************************************************

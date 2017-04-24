@@ -1,0 +1,159 @@
+(!******************************************************
+
+	UCD MSc Business Analytics Assignment
+  	
+  	Authors:
+  	Eoin Carroll (16202781) 
+  	Andy McSweeney (16203177)
+  	
+  	Module Code: MIS40520
+	Module Title: Analytical Business Modelling
+	Assessment Title: Assignment 3: Analytical Business Modelling 2017
+	Project Title: Food Mix Problem
+	Module Co-ordinator: Dr Paula Carroll
+	Revision: 0
+	Filename: MIS40520_ABM_AS3_16202781_16203177.mos
+	Date Started: 10/04/2017
+	Date Submitted: 18/04/2017
+  	
+  	References: 
+  	Parts of the following class code samples were used:
+  	diet.mos
+  	part2_subroutine_demo.mos
+  	ABM_assignment_2_Team_9.mos
+  	
+  ******************************************************
+
+	Execution Instructions:
+	Select which input file you want to model
+	In the input .dat file, select which paramaters you want to use
+	Uncomment the input file that you want to model
+	Run the model and examine the results on the right
+  	
+  *******************************************************!)
+  
+  
+
+model Food_mix
+ uses "mmxprs"             				       ! We shall use Xpress-Optimizer
+ 
+ 
+declarations
+ 	input = "Stigler_Full_77_1939.dat"		! Full Stigler Problem 77 Foods, 1939
+ 	! input = "Stigler_Reduced_9_1939.dat"		! Reduced Stigler Problem 9 Foods, 1939
+ 	! input = "Stigler_Reduced_15_1944.dat"		! Reduced Stigler Problem 15 Foods, 1944
+ 	! input = "Everest_trip1.dat"				! Everest Problem 1/3
+ 	! input = "Everest_trip2_trip3.dat"			! Everest Problem 2/3
+ 	! input = "Everest_summit.dat"				! Everest Problem 3/3
+ 	
+ 	nutrient_requirement: string 				! Do we want to meet or exceed the nutrient requirement (exact, minimum)
+ 	no_days: integer							! How many days to calculate
+ 	no_foods: integer							! Number of foods in the problem
+	no_requirements: integer					! Number of nutrients in input data
+end-declarations
+ 
+initializations from input						! Read in array size data from file
+	nutrient_requirement
+	no_days
+	no_foods
+	no_requirements
+end-initializations
+
+declarations
+    foods_array = 1..no_foods 							! We have x food types to choose from
+    commodities_array = 1..2 							! Two columns in this array - food and weight units
+    data_array = 1..(no_requirements+2)					! Nutrients plus weight, price
+    requirement_array = 1..no_requirements 				! Nutrients to supply
+    
+    x: array(foods_array) of mpvar 						! Decision variables: number of dollars worth of food to eat
+    
+    commodities: array(foods_array, commodities_array) of string 	! food name and weight as text
+	data: array(foods_array, data_array) of real 					! Nutrients plus name, weight, price
+	requirement_names: array(requirement_array) of string 			! Names of inputs for nutrient types
+	requirement: array(requirement_array) of real 					! Nutrients allowance/requirement
+	
+    ctr: array(requirement_array) of linctr
+end-declarations
+	
+initializations from input
+	commodities
+	data
+	requirement_names
+	requirement
+ end-initializations
+	
+cost := sum(i in foods_array) x(i)    						! Objective function - x(i) is dollar spent on each food
+weight := sum(i in foods_array) data(i,2)*x(i)    			! Objective function - x(i) * weight per dollar
+
+
+if (nutrient_requirement = "exact") then					! Meet requirements exactly
+	forall(i in requirement_array) do
+		ctr(i):= sum(j in foods_array) data(j,i+2)*x(j) = requirement(i)*no_days
+	end-do
+else
+	forall(i in requirement_array) do						! Default to meet/exceed all requirements
+		ctr(i):= sum(j in foods_array) data(j,i+2)*x(j) >= requirement(i)*no_days
+	end-do
+end-if
+
+procedure print_header
+	writeln("Results for input file ", input, ":")
+	writeln("")
+	writeln("Parameter nutrient_requirement: ", nutrient_requirement)
+	writeln("Parameter no_days: ", no_days)
+	writeln("Parameter no_foods: ", no_foods)
+	writeln("Parameter no_requirements: ", no_requirements)
+	writeln("")
+	writeln("")
+end-procedure
+
+procedure print_status										! Procedure to check problem status
+	declarations
+		status: string
+	end-declarations
+	case getprobstat of
+		XPRS_OPT: status:="Optimum found"
+		XPRS_UNF: status:="Unfinished"
+		XPRS_INF: status:="Infeasible"
+		XPRS_UNB: status:="Unbounded"
+		XPRS_OTH: status:="Failed"
+		else status:="???"
+	end-case
+	writeln("Problem status: ", status)
+	writeln("")
+end-procedure
+
+procedure print_results          							! Solution printing
+	writeln("Total cost for ", no_days, " days is: $",  strfmt(sum(i in foods_array) getsol(x(i)),0,2))
+	writeln("Daily cost is: $", strfmt((sum(i in foods_array) getsol(x(i))/no_days),0,2))
+	writeln("Total weight for ", no_days, " days is: ", strfmt(sum(i in foods_array) data(i,2)*getsol(x(i)),0,0), " grams")
+	writeln("Daily weight is: ", strfmt(sum(i in foods_array) data(i,2)*getsol(x(i))/no_days,0,0), " grams")
+	writeln("")
+	writeln("Daily food breakdown results:")
+	forall(i in foods_array) do
+		if (getsol(x(i)) > 0) then
+			writeln(commodities(i,1), ": ", strfmt(data(i,2)*getsol(x(i))/no_days,0,2), " grams", " = $", strfmt(getsol(x(i))/no_days,0,3))
+		end-if
+	end-do
+	writeln("")
+	writeln("Daily nutrient breakdown result/required:")
+	forall(i in requirement_array) do
+		writeln(requirement_names(i), ": ", strfmt(sum(j in foods_array) data(j,i+2)*getsol(x(j))/no_days,0,3), " / ", requirement(i), " = ", strfmt(sum(j in foods_array) ((data(j,i+2)*getsol(x(j))/no_days)/requirement(i))*100,0,0), "%")
+	end-do
+	writeln("")
+end-procedure
+
+print_header
+minimize(cost)												! Solve the problem - for cost
+writeln("LP Solution for minimising cost:")
+writeln("")
+print_status
+print_results
+writeln("")
+minimize(weight)											! Solve the problem - for weight
+writeln("LP Solution for minimising weight:")
+writeln("")
+print_status
+print_results
+
+end-model

@@ -1,0 +1,47 @@
+! Data file for `MIS40520_ABM_AS3_16202781_16203177.mos'
+! Reduced Stigler model with 1939 reduced data set as per his paper
+! Notes:
+!	Can only have one set of square brackets [ ]
+! 	New line in this file represents new row in array
+! 	Can handle commas, tabs or spaces between entries
+! 	String can be quoted or not. Need quotes if there is a space in the string
+
+! Modelling Parameters
+!	nutrient_requirement: Do we want to meet or exceed the nutrient requirement (exact, minimum) 
+! 	no_days: How many days to calculate
+!	no_foods: Number of foods in the array
+!	no_requirements: Number of nutrient requirements
+
+nutrient_requirement: minimum
+no_days: 365
+no_foods: 9
+no_requirements: 9
+
+! Input data
+
+! Recommended daily allowance/requirements for a moderately active man
+requirement : [3.0, 70.0, 0.8, 12.0, 5.0, 1.8, 2.7, 18.0, 75.0]
+
+requirement_names: [Calories, Protein, Calcium, Iron, VitaminA, VitaminB1, VitaminB2, Niacian, VitaminC]
+
+commodities : ["Wheat Flour (Enriched)", "10 lb.",
+	"Evaporated Milk (can)", "14.5 oz.",
+	"Cheese (Cheddar)", "1 lb.",
+	"Liver (Beef)", "1 lb.",
+	"Cabbage", "1 lb.",
+	"Spinach", "1 lb.",
+	"Sweet Potatoes", "1 lb.",
+	"Lima Beans, Dried", "1 lb.",
+	"Navy Beans, Dried", "1 lb.",]	
+! Names for the data matrix: [Price, Weight, Calories, Protein, Calcium, Iron, VitaminA, VitaminB1, VitaminB2, Niacian, VitaminC]
+! Calories are x1000
+! Weight means edible weight per $1 and is used to calculate weight in the model
+data : [36.0, 12600.0, 44.7, 1411.0, 2.0, 365.0, 0.0, 55.4, 33.3, 441.0, 0.0,
+	6.7, 6035.0, 8.4, 422.0, 15.1, 9.0, 26.0, 3.0, 23.5, 11.0, 60.0,
+	24.2, 1874.0, 7.4, 448.0, 16.4, 19.0, 28.1, 0.8, 10.3, 4.0, 0.0,
+	26.8, 1692.0, 2.2, 333.0, 0.2, 139.0, 169.2, 6.4, 50.8, 316.0, 525.0,
+	3.7, 8949.0, 2.6, 125.0, 4.0, 36.0, 7.2, 9.0, 4.5, 26.0, 5369.0,
+	8.1, 4592.0, 1.1, 106.0, 0.0, 138.0, 918.4, 5.7, 13.8, 33.0, 2755.0,
+	5.1, 7649.0, 9.6, 138.0, 2.7, 54.0, 290.7, 8.4, 5.4, 83.0, 1912.0,
+	8.9, 5097.0, 17.4, 1055.0, 3.7, 459.0, 5.1, 26.9, 38.2, 93.0, 0.0,
+	5.9, 7688.0, 26.9, 1691.0, 11.4, 792.0, 0.0, 38.4, 24.6, 217.0, 0.0,]

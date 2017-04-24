@@ -49,3 +49,4 @@ https://en.wikipedia.org/wiki/Stigler_diet
  input = "Everest_trip1.dat"				! Everest Problem 1/3
  input = "Everest_trip2_trip3.dat"			! Everest Problem 2/3
  input = "Everest_summit.dat"				! Everest Problem 3/3
+  ******************************************************
